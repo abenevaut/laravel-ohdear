@@ -4,9 +4,17 @@ namespace abenevaut\Ohdear\Factories;
 
 use abenevaut\Ohdear\Contracts\ApiRepositoryAbstract;
 use abenevaut\Ohdear\Contracts\OhdearDriversEnum;
+use Illuminate\Foundation\Application;
 
 class OhdearDriverFactory
 {
+    /**
+     * @param  Application  $app
+     */
+    public function __construct(private Application $app)
+    {
+    }
+
     /**
      * Get the registered name of the component.
      *
@@ -14,8 +22,8 @@ class OhdearDriverFactory
      */
     public function drive(OhdearDriversEnum $driver): ApiRepositoryAbstract
     {
-        $class = '\\abenevaut\\Ohdear\\Repositories\\' . $driver->value . 'Repository';
-
-        return new $class();
+        return $this
+            ->app
+            ->make('\\abenevaut\\Ohdear\\Repositories\\' . $driver->value . 'Repository');
     }
 }

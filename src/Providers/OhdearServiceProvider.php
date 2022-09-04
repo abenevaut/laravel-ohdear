@@ -4,6 +4,7 @@ namespace abenevaut\Ohdear\Providers;
 
 use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNameInterface
@@ -23,7 +24,7 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../../config/ohdear.php',
+            __DIR__ . '/../../config/ohdear.php',
         ], self::OHDEAR);
     }
 
@@ -36,9 +37,9 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
     {
         parent::register();
 
-        $this->app->singleton(self::OHDEAR, function ($app) {
+        $this->app->singleton(self::OHDEAR, function (Application $app) {
             // @codeCoverageIgnoreStart
-            return new OhdearDriverFactory();
+            return new OhdearDriverFactory($app);
             // @codeCoverageIgnoreEnd
         });
     }
