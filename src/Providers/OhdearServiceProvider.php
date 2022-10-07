@@ -26,7 +26,6 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
     {
         Route::group([
             'as' => 'ohdear.',
-            'prefix' => 'ohdear',
             'namespace' => 'abenevaut\Ohdear\Controllers',
         ], function () {
             $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
