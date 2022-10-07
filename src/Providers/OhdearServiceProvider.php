@@ -5,6 +5,7 @@ namespace abenevaut\Ohdear\Providers;
 use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNameInterface
