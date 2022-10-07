@@ -12,6 +12,12 @@ abstract class ApiRepositoryAbstract
      */
     private string $baseUrl = 'https://ohdear.app/api';
 
+    public function __construct(
+        private readonly string $accessToken,
+        private readonly bool $debug
+    ) {
+    }
+
     /**
      * @param  string  $uri
      * @return string
@@ -24,19 +30,25 @@ abstract class ApiRepositoryAbstract
     /**
      * @return PendingRequest
      */
-    protected function request(): PendingRequest
+    protected function request(array $requestHeaders = []): PendingRequest
     {
-        return $this
-            ->withHeaders()
-            ->retry(3, 100);
+        $pendingRequest = $this->withHeaders($requestHeaders);
+
+        if ($this->debug) {
+            $pendingRequest->withoutVerifying();
+        }
+
+        return $pendingRequest->retry(3, 100);
     }
 
     /**
      * @return PendingRequest
      */
-    private function withHeaders(): PendingRequest
+    private function withHeaders(array $requestHeaders = []): PendingRequest
     {
-        return Http::withToken($this->accessToken)
+        $defaultHeaders = [];
+
+        return Http::withHeaders(array_merge($defaultHeaders, $requestHeaders))
             ->acceptJson();
     }
 }
