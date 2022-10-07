@@ -36,10 +36,7 @@ abstract class ApiRepositoryAbstract
      */
     private function withHeaders(): PendingRequest
     {
-        return Http::withToken(config('ohdear.access_token'))
-            ->withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]);
+        return Http::withToken($this->accessToken)
+            ->acceptJson();
     }
 }

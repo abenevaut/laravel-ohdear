@@ -24,6 +24,9 @@ class OhdearDriverFactory
     {
         return $this
             ->app
-            ->make('\\abenevaut\\Ohdear\\Repositories\\' . $driver->value . 'Repository');
+            ->make('\\abenevaut\\Ohdear\\Repositories\\'.$driver->value.'Repository', [
+                'accessToken' => $this->app['config']->get('service.ohdear.access_token'),
+                'debug' => $this->app->hasDebugModeEnabled(),
+            ]);
     }
 }
