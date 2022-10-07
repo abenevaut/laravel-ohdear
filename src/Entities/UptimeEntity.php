@@ -2,10 +2,10 @@
 
 namespace abenevaut\Ohdear\Entities;
 
-use abenevaut\Ohdear\Contracts\InvoiceInterface;
+use abenevaut\Ohdear\Contracts\UptimeInterface;
 use Spatie\DataTransferObject\DataTransferObject;
 
-class UptimeEntity extends DataTransferObject implements InvoiceInterface
+class UptimeEntity extends DataTransferObject implements UptimeInterface
 {
     public string $datetime;
 
