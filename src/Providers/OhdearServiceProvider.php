@@ -23,9 +23,13 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__ . '/../../config/ohdear.php',
-        ], self::OHDEAR);
+        Route::group([
+            'as' => 'ohdear.',
+            'prefix' => 'ohdear',
+            'namespace' => 'abenevaut\Ohdear\Controllers',
+        ], function () {
+            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        });
     }
 
     /**
