@@ -17,7 +17,8 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/http": "^9.27"
+        "illuminate/http": "^9.27",
+        "spatie/data-transfer-object": "^3.9"
     },
     "autoload": {
         "psr-4": {

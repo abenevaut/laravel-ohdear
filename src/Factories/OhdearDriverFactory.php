@@ -20,7 +20,7 @@ class OhdearDriverFactory
      *
      * @return string
      */
-    public function drive(OhdearDriversEnum $driver): ApiRepositoryAbstract
+    public function request(OhdearDriversEnum $driver): ApiRepositoryAbstract
     {
         return $this
             ->app

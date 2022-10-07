@@ -3,6 +3,7 @@
 namespace abenevaut\Ohdear\Repositories;
 
 use abenevaut\Ohdear\Contracts\ApiRepositoryAbstract;
+use abenevaut\Ohdear\Entities\UptimeEntity;
 use Illuminate\Support\Collection;
 
 final class SitesRepository extends ApiRepositoryAbstract
@@ -18,14 +19,7 @@ final class SitesRepository extends ApiRepositoryAbstract
             ->collect();
     }
 
-    /**
-     * @param  int  $siteId
-     * @param  string  $startedAt
-     * @param  string  $endedAt
-     * @param  string  $split
-     * @return Collection
-     */
-    public function getUptime(int $siteId, string $startedAt, string $endedAt, string $split = 'month'): Collection
+    public function getUptime(int $siteId, string $startedAt, string $endedAt, string $split = 'month'): UptimeEntity
     {
         $params = http_build_query([
             'filter[started_at]' => $startedAt,
@@ -33,9 +27,11 @@ final class SitesRepository extends ApiRepositoryAbstract
             'split' => $split,
         ]);
 
-        return $this
+        $resource = $this
             ->request()
             ->get($this->makeUrl("/sites/{$siteId}/uptime?{$params}"))
-            ->collect();
+            ->json();
+
+        return new UptimeEntity($resource);
     }
 }
