@@ -49,6 +49,7 @@ abstract class ApiRepositoryAbstract
         $defaultHeaders = [];
 
         return Http::withHeaders(array_merge($defaultHeaders, $requestHeaders))
+            ->withToken($this->accessToken)
             ->acceptJson();
     }
 }
