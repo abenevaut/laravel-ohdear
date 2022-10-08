@@ -10,11 +10,15 @@ use Illuminate\Support\Collection;
 
 final class SitesRepository extends ApiRepositoryAbstract
 {
-    public function all(): LengthAwarePaginator
+    public function all(int $page = 1): LengthAwarePaginator
     {
+        $params = http_build_query([
+            'page[number]' => $page,
+        ]);
+
         $response = $this
             ->request()
-            ->get($this->makeUrl("/sites"))
+            ->get($this->makeUrl("/sites?{$params}"))
             ->json();
 
         $resources = Collection::make($response['data'])
@@ -22,9 +26,13 @@ final class SitesRepository extends ApiRepositoryAbstract
 
         return new LengthAwarePaginator(
             $resources,
-            $resources->count(),
+            $response['meta']['total'],
             $response['meta']['per_page'],
-            $response['meta']['current_page']
+            $response['meta']['current_page'],
+            [
+                'path' => $this->makeUrl("/sites"),
+                'pageName' => 'page[number]'
+            ]
         );
     }
 
