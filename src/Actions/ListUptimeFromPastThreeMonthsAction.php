@@ -18,7 +18,7 @@ class ListUptimeFromPastThreeMonthsAction
         $this->uptimes = collect();
     }
 
-    public function execute(): self
+    public function execute(array $sitesList): self
     {
         $sitePage = 0;
 
@@ -41,8 +41,8 @@ class ListUptimeFromPastThreeMonthsAction
                 }
 
                 $sites
-                    ->each(function (SiteEntity $site) use ($currentMonth, $startOfMonth, $endOfMonth) {
-                        if (in_array($site->getId(), explode(',', $this->option('sites'))) === false) {
+                    ->each(function (SiteEntity $site) use ($sitesList, $currentMonth, $startOfMonth, $endOfMonth) {
+                        if (in_array($site->getId(), $sitesList) === false) {
                             return;
                         }
 

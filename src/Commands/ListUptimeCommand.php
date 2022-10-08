@@ -35,7 +35,8 @@ class ListUptimeCommand extends Command
                     $this->info("Uptime from start of week: {$uptimeAvg}%");
                     break;
                 case 'past_three_months':
-                    $action = new ListUptimeFromPastThreeMonthsAction();
+                    $action = (new ListUptimeFromPastThreeMonthsAction())
+                        ->execute(explode(',', $this->option('sites')));
 
                     $this
                         ->table(
