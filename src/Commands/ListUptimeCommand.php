@@ -2,9 +2,9 @@
 
 namespace abenevaut\Ohdear\Commands;
 
+use abenevaut\Ohdear\Actions\ListUptimeFromPastThreeMonthsAction;
+use abenevaut\Ohdear\Actions\ListUptimeFromStartOfWeekAction;
 use abenevaut\Ohdear\Contracts\ValidateCommandArgumentsTrait;
-use Actions\ListUptimeFromPastThreeMonthsAction;
-use Actions\ListUptimeFromStartOfWeekAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use function Termwind\{render};

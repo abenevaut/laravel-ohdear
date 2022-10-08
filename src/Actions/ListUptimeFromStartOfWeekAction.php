@@ -1,6 +1,6 @@
 <?php
 
-namespace Actions;
+namespace abenevaut\Ohdear\Actions;
 
 use abenevaut\Ohdear\Contracts\OhdearDriversEnum;
 use abenevaut\Ohdear\Entities\SiteEntity;
