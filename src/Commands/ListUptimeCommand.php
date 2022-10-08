@@ -42,7 +42,9 @@ class ListUptimeCommand extends Command
             $sitePage += 1;
             /** @var \Illuminate\Pagination\LengthAwarePaginator $sites */
             $sites = Ohdear::request(OhdearDriversEnum::SITES)
-                ->all($sitePage)
+                ->all($sitePage);
+
+            $sites
                 ->each(function (SiteEntity $site) use ($uptimes, $now, $startOfWeek) {
                     if (in_array($site->getId(), explode(',', $this->option('sites'))) === false) {
                         return;
