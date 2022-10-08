@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 
 class HealthCheckController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         return new Response(
             Response::$statusTexts[Response::HTTP_NO_CONTENT],

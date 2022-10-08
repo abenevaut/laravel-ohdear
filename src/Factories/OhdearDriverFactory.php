@@ -8,18 +8,10 @@ use Illuminate\Foundation\Application;
 
 class OhdearDriverFactory
 {
-    /**
-     * @param  Application  $app
-     */
     public function __construct(private Application $app)
     {
     }
 
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
     public function request(OhdearDriversEnum $driver): ApiRepositoryAbstract
     {
         return $this

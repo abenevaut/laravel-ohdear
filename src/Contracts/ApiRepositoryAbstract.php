@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Http;
 
 abstract class ApiRepositoryAbstract
 {
-    /**
-     * @var string
-     */
     private string $baseUrl = 'https://ohdear.app/api';
 
     public function __construct(
@@ -18,18 +15,11 @@ abstract class ApiRepositoryAbstract
     ) {
     }
 
-    /**
-     * @param  string  $uri
-     * @return string
-     */
     protected function makeUrl(string $uri): string
     {
         return "{$this->baseUrl}{$uri}";
     }
 
-    /**
-     * @return PendingRequest
-     */
     protected function request(array $requestHeaders = []): PendingRequest
     {
         $pendingRequest = $this->withHeaders($requestHeaders);
@@ -41,9 +31,6 @@ abstract class ApiRepositoryAbstract
         return $pendingRequest->retry(3, 100);
     }
 
-    /**
-     * @return PendingRequest
-     */
     private function withHeaders(array $requestHeaders = []): PendingRequest
     {
         $defaultHeaders = [];

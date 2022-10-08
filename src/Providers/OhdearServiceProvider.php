@@ -3,7 +3,6 @@
 namespace abenevaut\Ohdear\Providers;
 
 use abenevaut\Ohdear\Commands\ListUptimeCommand;
-use abenevaut\Ohdear\Contracts\OhdearEntitiesEnum;
 use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
 use Illuminate\Foundation\Application;
@@ -61,12 +60,14 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
 
     protected function registerRoutes(): self
     {
-        Route::group([
-            'as' => 'ohdear.',
-            'namespace' => 'abenevaut\Ohdear\Controllers',
-        ], function () {
-            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
-        });
+        if ($this->app->runningUnitTests() === false) {
+            $this->app['router']->group([
+                'as' => 'ohdear.',
+                'namespace' => 'abenevaut\Ohdear\Controllers',
+            ], function () {
+                $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+            });
+        }
 
         return $this;
     }
