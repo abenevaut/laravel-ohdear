@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+
 use function Termwind\{render};
 
 class ListUptimeCommand extends Command
@@ -21,6 +22,12 @@ class ListUptimeCommand extends Command
 
     public function handle()
     {
+        if (in_array($this->argument('from'), ['start_of_week', 'past_three_months']) === false) {
+            $this->error('Unavailable argument "from"!');
+
+            return self::FAILURE;
+        }
+
         switch ($this->argument('from')) {
             case 'start_of_week':
                 $this->startOfWeek();
@@ -29,6 +36,8 @@ class ListUptimeCommand extends Command
                 $this->pastThreeMonths();
                 break;
         }
+
+        return self::SUCCESS;
     }
 
     private function startOfWeek()
@@ -55,10 +64,11 @@ class ListUptimeCommand extends Command
                             $site->getId(),
                             $startOfWeek->format('YmdHis'),
                             $now->format('YmdHis')
-                        )
-                        ->uptime_percentage;
+                        );
 
-                    $uptimes->push($uptime);
+                    if ($uptime) {
+                        $uptimes->push($uptime->uptime_percentage);
+                    }
                 });
         } while ($sites->isNotEmpty() && $sites->hasMorePages());
 
@@ -69,80 +79,84 @@ class ListUptimeCommand extends Command
 
     private function pastThreeMonths()
     {
-//        $sitesList = config('ohdear.sites');
-//        $sites = Ohdear::request(OhdearDriversEnum::SITES)->all();
-//
-//        $uptimes = [];
-//        $siteUptimes = [];
-//
-//        for ($i = 2; $i >= 0; $i--) {
-//            $currentMonth = CarbonImmutable::now()->subMonthsNoOverflow($i);
-//
-//            $startOfMonth = $currentMonth->startOfMonth();
-//            $endOfMonth = $currentMonth->endOfMonth();
-//
-//            if ($endOfMonth->isFuture() === true) {
-//                $endOfMonth = Carbon::now()->subDay()->endOfDay();
-//            }
-//
-//            if ($endOfMonth->isAfter($startOfMonth) === false) {
-//                continue;
-//            }
-//
-//            foreach ($sites['data'] as $site) {
-//                $siteUptime = Ohdear::request(OhdearDriversEnum::SITES)
-//                    ->getUptime(
-//                        $site['id'],
-//                        $startOfMonth->format('YmdHis'),
-//                        $endOfMonth->format('YmdHis')
-//                    );
-//
-//                if ($siteUptime === []) {
-//                    continue;
-//                }
-//
-//                $uptimes[$currentMonth->monthName][] = $siteUptime[0]['uptime_percentage'];
-//
-//                $siteUptimes[] = [
-//                    'month'      => $currentMonth->monthName,
-//                    'site'       => $sitesList[$site['id']] ?? $site['id'],
-//                    'percentage' => $siteUptime[0]['uptime_percentage'],
-//                ];
-//            }
-//        }
-//
-//        $this
-//            ->table(
-//                [
-//                    'Month',
-//                    'Uptime (%)',
-//                ],
-//                collect($uptimes)
-//                    ->map(function ($value, $key) {
-//                        $avgUptime = round(collect($value)->avg(), 2);
-//
-//                        return [$key, $avgUptime];
-//                    })
-//                    ->toArray()
-//            );
-//
-//        $this->newLine();
-//
-//        collect($siteUptimes)
-//            ->groupBy('month')
-//            ->each(function (Collection $data) {
-//                $this
-//                    ->table(
-//                        [
-//                            'Month',
-//                            'Site',
-//                            'Uptime (%)',
-//                        ],
-//                        $data
-//                            ->sortBy('site')
-//                            ->values()
-//                            ->toArray()
-//                    );
-//            });
+        $sitePage = 0;
+        $uptimes = collect();
+
+        do {
+            $sitePage += 1;
+            /** @var \Illuminate\Pagination\LengthAwarePaginator $sites */
+            $sites = Ohdear::request(OhdearDriversEnum::SITES)
+                ->all($sitePage);
+
+            for ($i = 2; $i >= 0; $i--) {
+                $currentMonth = CarbonImmutable::now()->subMonthsNoOverflow($i);
+                $startOfMonth = $currentMonth->startOfMonth();
+                $endOfMonth = $currentMonth->endOfMonth();
+
+                if ($endOfMonth->isFuture() === true) {
+                    $endOfMonth = Carbon::now()->subDay()->endOfDay();
+                }
+
+                if ($endOfMonth->isAfter($startOfMonth) === false) {
+                    continue;
+                }
+
+                $sites
+                    ->each(function (SiteEntity $site) use ($uptimes, $currentMonth, $startOfMonth, $endOfMonth) {
+                        if (in_array($site->getId(), explode(',', $this->option('sites'))) === false) {
+                            return;
+                        }
+
+                        $uptime = Ohdear::request(OhdearDriversEnum::SITES)
+                            ->getUptime(
+                                $site->getId(),
+                                $startOfMonth->format('YmdHis'),
+                                $endOfMonth->format('YmdHis')
+                            );
+
+                        if ($uptime) {
+                            $uptimes->push([
+                                'month' => $currentMonth->monthName,
+                                'site' => $site->getId(),
+                                'uptime_percentage' => $uptime->uptime_percentage,
+                            ]);
+                        }
+                    });
+            }
+        } while ($sites->isNotEmpty() && $sites->hasMorePages());
+
+        $this
+            ->table(
+                [
+                    'Month',
+                    'Uptime (%)',
+                ],
+                $uptimes
+                    ->map(function ($uptime) {
+                        $avgUptime = round(collect($uptime['uptime_percentage'])->avg(), 2);
+
+                        return [$uptime['month'], $avgUptime];
+                    })
+                    ->toArray()
+            );
+
+        $this->newLine();
+
+        $uptimes
+            ->groupBy('month')
+            ->each(function (Collection $data) {
+                $this
+                    ->table(
+                        [
+                            'Month',
+                            'Site',
+                            'Uptime (%)',
+                        ],
+                        $data
+                            ->sortBy('site')
+                            ->values()
+                            ->toArray()
+                    );
+            });
     }
 }
