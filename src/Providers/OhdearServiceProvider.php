@@ -2,6 +2,7 @@
 
 namespace abenevaut\Ohdear\Providers;
 
+use abenevaut\Ohdear\Commands\ListUptimeCommand;
 use abenevaut\Ohdear\Contracts\OhdearEntitiesEnum;
 use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
@@ -32,6 +33,12 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
         ], function () {
             $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
         });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ListUptimeCommand::class,
+            ]);
+        }
 
         Collection::macro('toOhdearEntity', function (OhdearEntitiesEnum $driver) {
             return $this->map(function ($value) use ($driver) {
