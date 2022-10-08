@@ -1,9 +1,13 @@
 # OhDear API SDK
 
+## Install vendor
+
 ```
 composer require abenevaut/laravel-ohdear
 ```
 
+### Setup `services.php` config
+
 ```
-php artisan vendor:publish --provider="abenevaut\Ohdear\Providers\OhdearServiceProvider" --tag=ohdear
+services.ohdear.access_token
 ```

@@ -55,18 +55,22 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
      */
     public function provides()
     {
+        // @codeCoverageIgnoreStart
         return [self::OHDEAR];
+        // @codeCoverageIgnoreEnd
     }
 
     protected function registerRoutes(): self
     {
         if ($this->app->runningUnitTests() === false) {
+            // @codeCoverageIgnoreStart
             $this->app['router']->group([
                 'as' => 'ohdear.',
                 'namespace' => 'abenevaut\Ohdear\Controllers',
             ], function () {
                 $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
             });
+            // @codeCoverageIgnoreEnd
         }
 
         return $this;
