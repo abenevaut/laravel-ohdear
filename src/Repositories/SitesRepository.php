@@ -3,20 +3,29 @@
 namespace abenevaut\Ohdear\Repositories;
 
 use abenevaut\Ohdear\Contracts\ApiRepositoryAbstract;
+use abenevaut\Ohdear\Contracts\OhdearEntitiesEnum;
 use abenevaut\Ohdear\Entities\UptimeEntity;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 final class SitesRepository extends ApiRepositoryAbstract
 {
-    /**
-     * @return Collection
-     */
-    public function all(): Collection
+    public function all(): LengthAwarePaginator
     {
-        return $this
+        $response = $this
             ->request()
             ->get($this->makeUrl("/sites"))
-            ->collect();
+            ->json();
+
+        $resources = Collection::make($response['data'])
+            ->toOhdearEntity(OhdearEntitiesEnum::SITE);
+
+        return new LengthAwarePaginator(
+            $resources,
+            $resources->count(),
+            $response['meta']['per_page'],
+            $response['meta']['current_page']
+        );
     }
 
     public function getUptime(int $siteId, string $startedAt, string $endedAt, string $split = 'month'): UptimeEntity

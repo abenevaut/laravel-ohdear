@@ -9,11 +9,11 @@ class UptimeEntity extends DataTransferObject implements UptimeInterface
 {
     public string $datetime;
 
-    public string $uptimePercentage;
+    public string $uptime_percentage;
 
-    public function getUptimePercentage(): string
+    public function getUptimePercentage(): int
     {
-        return $this->uptimePercentage;
+        return $this->uptime_percentage;
     }
 
     public function getDatetime(): string

@@ -2,9 +2,11 @@
 
 namespace abenevaut\Ohdear\Providers;
 
+use abenevaut\Ohdear\Contracts\OhdearEntitiesEnum;
 use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +31,12 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
             'namespace' => 'abenevaut\Ohdear\Controllers',
         ], function () {
             $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        });
+
+        Collection::macro('toOhdearEntity', function (OhdearEntitiesEnum $driver) {
+            return $this->map(function ($value) use ($driver) {
+                return new ("abenevaut\\Ohdear\\Entities\\{$driver->value}Entity")($value);
+            });
         });
     }
 
