@@ -36,7 +36,7 @@ final class SitesRepository extends ApiRepositoryAbstract
         );
     }
 
-    public function getUptime(int $siteId, string $startedAt, string $endedAt, string $split = 'month'): UptimeEntity
+    public function getUptime(int $siteId, string $startedAt, string $endedAt, string $split = 'month'): ?UptimeEntity
     {
         $params = http_build_query([
             'filter[started_at]' => $startedAt,
@@ -49,6 +49,10 @@ final class SitesRepository extends ApiRepositoryAbstract
             ->get($this->makeUrl("/sites/{$siteId}/uptime?{$params}"))
             ->json();
 
-        return new UptimeEntity($resource);
+        if (count($resource)) {
+            return new UptimeEntity($resource[0]);
+        }
+
+        return null;
     }
 }
