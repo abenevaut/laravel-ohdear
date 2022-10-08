@@ -4,6 +4,7 @@ namespace abenevaut\Ohdear\Repositories;
 
 use abenevaut\Ohdear\Contracts\ApiRepositoryAbstract;
 use abenevaut\Ohdear\Contracts\OhdearEntitiesEnum;
+use abenevaut\Ohdear\Entities\SiteEntity;
 use abenevaut\Ohdear\Entities\UptimeEntity;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -21,8 +22,7 @@ final class SitesRepository extends ApiRepositoryAbstract
             ->get($this->makeUrl("/sites?{$params}"))
             ->json();
 
-        $resources = Collection::make($response['data'])
-            ->toOhdearEntity(OhdearEntitiesEnum::SITE);
+        $resources = Collection::make($response['data'])->toOhdearEntity(SiteEntity::class);
 
         return new LengthAwarePaginator(
             $resources,

@@ -27,24 +27,10 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
      */
     public function boot()
     {
-        Route::group([
-            'as' => 'ohdear.',
-            'namespace' => 'abenevaut\Ohdear\Controllers',
-        ], function () {
-            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
-        });
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ListUptimeCommand::class,
-            ]);
-        }
-
-        Collection::macro('toOhdearEntity', function (OhdearEntitiesEnum $driver) {
-            return $this->map(function ($value) use ($driver) {
-                return new ("abenevaut\\Ohdear\\Entities\\{$driver->value}Entity")($value);
-            });
-        });
+        $this
+            ->registerRoutes()
+            ->registerCommands()
+            ->registerMacros();
     }
 
     /**
@@ -71,5 +57,39 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
     public function provides()
     {
         return [self::OHDEAR];
+    }
+
+    protected function registerRoutes(): self
+    {
+        Route::group([
+            'as' => 'ohdear.',
+            'namespace' => 'abenevaut\Ohdear\Controllers',
+        ], function () {
+            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        });
+
+        return $this;
+    }
+
+    protected function registerCommands(): self
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ListUptimeCommand::class,
+            ]);
+        }
+
+        return $this;
+    }
+
+    protected function registerMacros(): self
+    {
+        Collection::macro('toOhdearEntity', function (string $class) {
+            return $this->map(function ($value) use ($class) {
+                return new $class($value);
+            });
+        });
+
+        return $this;
     }
 }
