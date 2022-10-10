@@ -20,7 +20,10 @@
         "illuminate/http": "^9.27",
         "illuminate/routing": "^9.27",
         "guzzlehttp/guzzle": "^7.5",
-        "spatie/data-transfer-object": "^3.9"
+        "spatie/data-transfer-object": "^3.9",
+        "illuminate/validation": "^9.34",
+        "illuminate/translation": "^9.34",
+        "illuminate/pagination": "^9.34"
     },
     "autoload": {
         "psr-4": {

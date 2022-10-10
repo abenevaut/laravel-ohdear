@@ -16,8 +16,8 @@ class ListUptimeCommand extends Command implements ValidateCommandArgumentsInter
     use ValidateCommandArgumentsTrait;
 
     protected $signature = 'ohdear:list:uptime
-        {from=start_of_week : Display uptime from start of week with option `start_of_week` or past three months with option `past_three_months`}
-        {--sites= : Specify sites list, separated by comma}';
+        {from : Display uptime from `start_of_week` or `past_three_months`}
+        {sites* : Specify sites list, separated by space}';
 
     protected $description = 'List OhDear uptime by site';
 
@@ -29,7 +29,7 @@ class ListUptimeCommand extends Command implements ValidateCommandArgumentsInter
             switch ($this->argument('from')) {
                 case 'start_of_week':
                     $uptimeAvg = (new ListUptimeFromStartOfWeekAction())
-                        ->execute(explode(',', $this->option('sites')))
+                        ->execute($this->argument('sites'))
                         ->uptimes
                         ->avg();
 
@@ -39,7 +39,7 @@ class ListUptimeCommand extends Command implements ValidateCommandArgumentsInter
                     break;
                 case 'past_three_months':
                     $action = (new ListUptimeFromPastThreeMonthsAction())
-                        ->execute(explode(',', $this->option('sites')));
+                        ->execute($this->argument('sites'));
 
                     $this
                         ->table(
@@ -90,6 +90,8 @@ class ListUptimeCommand extends Command implements ValidateCommandArgumentsInter
     {
         return [
             'from' => 'required|in:start_of_week,past_three_months',
+            'sites' => 'required',
+            'sites.*' => 'distinct|numeric|min:1',
         ];
     }
 }

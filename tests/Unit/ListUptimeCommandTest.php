@@ -115,14 +115,15 @@ class ListUptimeCommandTest extends TestCase
         $command = new ListUptimeCommand();
         $input = new ArrayInput([
             'from' => 'start_of_week',
-            '--sites' => $data->join(','),
+            'sites' => $data->join(','),
         ]);
         $output = new NullOutput();
 
         $command->setLaravel($this->app);
-        $command->run($input, $output);
+        $returnStatement = $command->run($input, $output);
 
         $this->assertSame('start_of_week', $command->argument('from'));
-        $this->assertSame($data->join(','), $command->option('sites'));
+        $this->assertSame($data->join(','), $command->argument('sites'));
+        $this->assertSame(ListUptimeCommand::SUCCESS, $returnStatement);
     }
 }
