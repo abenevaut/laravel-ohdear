@@ -7,7 +7,6 @@ use abenevaut\Ohdear\Contracts\OhdearProviderNameInterface;
 use abenevaut\Ohdear\Factories\OhdearDriverFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNameInterface
@@ -62,7 +61,10 @@ class OhdearServiceProvider extends ServiceProvider implements OhdearProviderNam
 
     protected function registerRoutes(): self
     {
-        if ($this->app->runningUnitTests() === false) {
+        if (
+            $this->app->runningInConsole() === false
+            && $this->app->runningUnitTests() === false
+        ) {
             // @codeCoverageIgnoreStart
             $this->app['router']->group([
                 'as' => 'ohdear.',

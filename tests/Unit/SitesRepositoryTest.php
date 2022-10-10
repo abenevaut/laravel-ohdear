@@ -7,6 +7,8 @@ use abenevaut\Ohdear\Providers\OhdearServiceProvider;
 use abenevaut\Ohdear\Repositories\SitesRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Http;
+use Mockery as m;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  */
 class SitesRepositoryTest extends TestCase
 {
-    protected $app;
+    protected Application $app;
 
     protected function setUp(): void
     {
@@ -23,6 +25,13 @@ class SitesRepositoryTest extends TestCase
         $this->app->register(OhdearServiceProvider::class);
         $this->app->boot();
         Facade::setFacadeApplication($this->app);
+
+        Http::preventStrayRequests();
+    }
+
+    protected function tearDown(): void
+    {
+        m::close();
     }
 
     public function testAll()

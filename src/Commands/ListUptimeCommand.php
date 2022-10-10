@@ -4,12 +4,14 @@ namespace abenevaut\Ohdear\Commands;
 
 use abenevaut\Ohdear\Actions\ListUptimeFromPastThreeMonthsAction;
 use abenevaut\Ohdear\Actions\ListUptimeFromStartOfWeekAction;
+use abenevaut\Ohdear\Contracts\ValidateCommandArgumentsInterface;
 use abenevaut\Ohdear\Contracts\ValidateCommandArgumentsTrait;
+use abenevaut\Ohdear\Exceptions\ValidateCommandArgumentsException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use function Termwind\{render};
 
-class ListUptimeCommand extends Command
+class ListUptimeCommand extends Command implements ValidateCommandArgumentsInterface
 {
     use ValidateCommandArgumentsTrait;
 
@@ -30,6 +32,7 @@ class ListUptimeCommand extends Command
                         ->execute(explode(',', $this->option('sites')))
                         ->uptimes
                         ->avg();
+
                     $uptimeAvg = round($uptimeAvg, 2);
 
                     $this->info("Uptime from start of week: {$uptimeAvg}%");
@@ -78,7 +81,7 @@ class ListUptimeCommand extends Command
             }
 
             return self::SUCCESS;
-        } catch (\Exception $exception) {
+        } catch (ValidateCommandArgumentsException $exception) {
             return $this->displayErrors();
         }
     }
@@ -86,7 +89,6 @@ class ListUptimeCommand extends Command
     protected function rules(): array
     {
         return [
-            'command' => 'required|in:ohdear:list:uptime',
             'from' => 'required|in:start_of_week,past_three_months',
         ];
     }

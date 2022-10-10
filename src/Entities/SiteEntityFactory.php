@@ -18,7 +18,7 @@ class SiteEntityFactory extends Factory
         $this->faker = \Faker\Factory::create();
 
         return [
-            'id' => $this->faker->uuid(),
+            'id' => $this->faker->randomNumber(),
             'url' => $this->faker->url(),
             'sort_url' => $this->faker->domainName().$this->faker->tld(),
             'label' => $this->faker->userName(),
